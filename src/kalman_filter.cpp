@@ -56,6 +56,9 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 	// check division by zero
 	if(fabs(rho) < 0.0001){
 		std::cout << "UpdateEKF () - Error - Division by Zero" << std::endl;
+		// zero division is caused by rho == 0. 
+		// in this situation phi and rho_dot become singular,
+		// they are set to zero.
 		rho = 0.;
 		phi = 0.;
 		rho_dot = 0.;

@@ -146,6 +146,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     // calculate the radar's Jacobian H and use this one to update state
     Hj_ = tools.CalculateJacobian(ekf_.x_);
     ekf_.H_ = Hj_;
+    // use radar measurement covariance matrix R
+    ekf_.R_ = R_radar_;
+
     ekf_.UpdateEKF(measurement_pack.raw_measurements_);
   } 
 	/*
@@ -154,6 +157,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   else {
     // recover the laser's H and use this one to update state
     ekf_.H_ = H_laser_;
+    // use laser measurement covariance matrix R
+    ekf_.R_ = R_laser_;
+
     ekf_.Update(measurement_pack.raw_measurements_);
   }
 

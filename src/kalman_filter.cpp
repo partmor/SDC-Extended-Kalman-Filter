@@ -32,7 +32,7 @@ void KalmanFilter::Update(const VectorXd &z) {
 * given the measurment vector @param z
 */
 
-  MatrixXd I = MatrixXd::Identity(z.size(), z.size());
+  MatrixXd I = MatrixXd::Identity(x_.size(), x_.size());
 
   VectorXd y = z - H_ * x_;
   MatrixXd Ht = H_.transpose();
@@ -48,7 +48,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 * given the measurement vector @param z
 */
 
-  MatrixXd I = MatrixXd::Identity(z.size(), z.size());
+  MatrixXd I = MatrixXd::Identity(x_.size(), x_.size());
 
   // components of state vector in polar coordinates
   float rho = sqrt(x_(0)*x_(0) + x_(1)*x_(1));

@@ -72,6 +72,12 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   hx << rho, phi, rho_dot;
 
   VectorXd y = z - hx;
+  // normalize error phi component to lay in [-pi, pi] range
+  if(y(1) > M_PI){
+    y(1) -= 2.*M_PI;
+  } else if(y(1) < -M_PI){
+    y(1) += 2.*M_PI;
+  }
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_; 
   MatrixXd K = P_ * Ht * S.inverse();

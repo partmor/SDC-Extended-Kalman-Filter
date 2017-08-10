@@ -55,11 +55,10 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     // first measurement
     cout << "EKF: " << endl;
     
-    /**
-    State vector initialization
-    */
-    
-    float px = 0, py = 0, vx = 0, vy = 0;
+    float px, py, vx, vy;
+    MatrixXd P_in = MatrixXd(4, 4);
+    P_in.fill(0.0);
+    VectorXd x_in = VectorXd(4);
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       // Convert radar from polar to cartesian coordinates and initialize state.
@@ -73,35 +72,42 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       py = - rho * sin(phi);
       vx = rho_dot * cos(phi);
       vy = - rho_dot * sin(phi);
+
+      P_in(0,0) = 0.09*0.09;
+      P_in(1,1) = 0.09*0.09;
+      P_in(2,2) = 0.09*0.09;
+      P_in(3,3) = 0.09*0.09;
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       //set the state with the initial location and zero velocity
       px = measurement_pack.raw_measurements_(0);
       py = measurement_pack.raw_measurements_(1);
-      vx = 0;
+      vx = 5;
       vy = 0;
+
+      P_in(0,0) = 0.0225*0.0225;
+      P_in(1,1) = 0.0225*0.0225;
+      P_in(2,2) = 50;
+      P_in(3,3) = 50;
     }
 
-    VectorXd x_in = VectorXd(4);
+    /**
+    State initialization
+    */
     x_in << px, py, vx, vy;
     ekf_.x_ = x_in;
 
     /**
     State transition matrix initialization
     */
+    MatrixXd F_in = MatrixXd::Identity(4, 4);
+    ekf_.F_ = F_in;
     
-  	MatrixXd F_in = MatrixXd::Identity(4, 4);
-  	ekf_.F_ = F_in;
-  	
-  	/**
+    /**
     State covariance matrix initialization
     */
-    MatrixXd P_in = MatrixXd(4, 4);
-	  P_in << 1, 0, 0, 0,
-			      0, 1, 0, 0,
-			      0, 0, 1000, 0,
-			      0, 0, 0, 1000;
-		ekf_.P_ = P_in;
+
+    ekf_.P_ = P_in;
     
     // done initializing, no need to predict or update
     is_initialized_ = true;

@@ -146,7 +146,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 ****************************************************************************/
 
   /*
-  Laser updates
+  Radar updates
   */
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // calculate the radar's Jacobian H and use this one to update state
